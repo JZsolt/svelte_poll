@@ -1,30 +1,38 @@
 <script>
-	export let name;
+    import Header from './components/Header.svelte'
+    import Footer from "./components/Footer.svelte";
+    import Tabs from "./shared/Tabs.svelte";
+    import CreateFormPoll from "./components/CreateFormPoll.svelte";
+
+    //tabs
+    let items = ['Current Poll', 'New Poll'];
+    let activeItem = 'Current Poll';
+
+    const tabChange = (e) => {
+        activeItem = e.detail
+    }
 </script>
 
+<Header/>
 <main>
-	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
+    <h1>Poll</h1>
+    <Tabs {activeItem} {items} on:tabChange={tabChange}/>
+    <p>
+        {#if activeItem === 'Current Poll'}
+            Current Poll
+        {:else if (activeItem === 'New Poll')}
+            <CreateFormPoll/>
+        {/if}
+    </p>
 </main>
+<Footer/>
 
 <style>
-	main {
-		text-align: center;
-		padding: 1em;
-		max-width: 240px;
-		margin: 0 auto;
-	}
-
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-	}
-
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
-	}
+    h1 {
+        text-align: center;
+    }
+    main {
+        max-width: 960px;
+        margin: 40px auto;
+    }
 </style>
