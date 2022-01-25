@@ -1,4 +1,6 @@
 <script>
+    import {fade} from 'svelte/transition'
+    import PollSotre from "../stores/PollSotre";
     import {createEventDispatcher} from "svelte";
     import Button from "../shared/Button.svelte";
 
@@ -40,12 +42,16 @@
 
         if (valid){
             let poll = {... fields, votesA:0, votesB:0, id: Math.floor(Math.random()*100)}
-            dispatch('add', poll)
+            //save poll ins store
+            PollSotre.update(currentPolls => {
+                return [poll, ...currentPolls];
+            })
+            dispatch('add')
         }
     }
 </script>
 
-<div class="form">
+<div class="form" in:fade>
     <form on:submit|preventDefault={submitHeandler}>
         <div class="form-field">
             <label for="question">Poll Question:</label>

@@ -13,26 +13,8 @@
         activeItem = e.detail
     }
 
-    const handleAdd = (e) => {
-        const poll = e.detail;
-        polls = [poll, ...polls]
+    const handleAdd = () => {
         activeItem = 'Current Poll';
-    }
-
-    const handleVote = (e) => {
-        const {id, option} = e.detail;
-        let copyPolls = [...polls]
-        let upvotedPoll = copyPolls.find((poll) => poll.id == id);
-
-        if (option == 'a') {
-            upvotedPoll.votesA++;
-        }
-        if (option == 'b') {
-            upvotedPoll.votesB++
-        }
-
-        polls = copyPolls;
-
     }
 </script>
 
@@ -42,7 +24,7 @@
     <Tabs {activeItem} {items} on:tabChange={tabChange}/>
     <p>
         {#if activeItem === 'Current Poll'}
-            <PollList on:vote={handleVote}/>
+            <PollList/>
         {:else if (activeItem === 'New Poll')}
             <CreateFormPoll on:add={handleAdd}/>
         {/if}

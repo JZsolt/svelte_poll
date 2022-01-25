@@ -1,17 +1,40 @@
 <script>
-    import {createEventDispatcher} from "svelte";
     import Card from "../shared/Card.svelte";
+    import PollSotre from "../stores/PollSotre";
+    import Button from "../shared/Button.svelte";
+    import {tweened} from "svelte/motion"
 
-    let dispatch = createEventDispatcher();
     export let poll;
 
     $: totalVote = poll.votesA + poll.votesB;
-    $: percenteA = Math.floor(100 / totalVote * poll.votesA);
-    $: percenteB = Math.floor(100 / totalVote * poll.votesB);
+    $: percenteA = Math.floor(100 / totalVote * poll.votesA) || 0;
+    $: percenteB = Math.floor(100 / totalVote * poll.votesB) || 0;
+
+    const tweenedA = tweened(0);
+    const tweenedB = tweened(0);
+    $: tweenedA.set(percenteA);
+    $: tweenedB.set(percenteB);
 
     const handleVote = (option, id) => {
-        console.log(option + ',' + id)
-        dispatch('vote', {option: option, id: id})
+        PollSotre.update(currentPolls => {
+            let copyPolls = [...currentPolls]
+            let upvotedPoll = copyPolls.find((poll) => poll.id == id);
+
+            if (option == 'a') {
+                upvotedPoll.votesA++;
+            }
+            if (option == 'b') {
+                upvotedPoll.votesB++
+            }
+
+            return copyPolls;
+        })
+    }
+
+    const handleDelete = (id) => {
+        PollSotre.update(currentPoll => {
+            return currentPoll.filter(poll => poll.id != id);
+        })
     }
 </script>
 
@@ -20,12 +43,15 @@
         <h3>{poll.question}</h3>
         <p>Total vote: {totalVote}</p>
         <div class="answer" on:click={()=> handleVote('a', poll.id)}>
-            <div class="percent answer_a" style="width: {percenteA}%;"></div>
+            <div class="percent answer_a" style="width: {$tweenedA}%;"></div>
             <span>{poll.answer_a} ({poll.votesA})</span>
         </div>
         <div class="answer" on:click={()=> handleVote('b', poll.id)}>
-            <div class="percent answer_b" style="width: {percenteB}%;"></div>
+            <div class="percent answer_b" style="width: {$tweenedB}%;"></div>
             <span>{poll.answer_b} ({poll.votesB})</span>
+        </div>
+        <div class="delete">
+            <Button flat="true" inverse="true" on:click={() => handleDelete(poll.id)}>Delete</Button>
         </div>
     </div>
 </Card>
@@ -75,5 +101,9 @@
         background: rgba(69, 196, 150, 0.2);
       }
     }
+  }
+  .delete {
+    margin: 30px;
+    text-align: center;
   }
 </style>
